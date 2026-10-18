@@ -34,5 +34,12 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Build Docker image
-        run: docker build --tag incident-ops-lab:ci .
+      - name: Start application stack
+        run: docker compose up --build --detach
+
+      - name: Check API readiness
+        run: curl --fail --retry 10 --retry-connrefused --retry-delay 2 http://localhost:3000/health/ready
+
+      - name: Stop application stack
+        if: always()
+        run: docker compose down --volumes
