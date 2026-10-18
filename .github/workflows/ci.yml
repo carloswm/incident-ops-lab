@@ -40,6 +40,12 @@ jobs:
       - name: Check API readiness
         run: curl --fail --retry 10 --retry-connrefused --retry-delay 2 http://localhost:3000/health/ready
 
+      - name: Show Compose logs on failure
+        if: failure()
+        run: |
+          docker compose ps --all || true
+          docker compose logs --no-color || true
+
       - name: Stop application stack
         if: always()
         run: docker compose down --volumes
